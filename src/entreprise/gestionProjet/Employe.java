@@ -15,19 +15,19 @@ public class Employe {
     protected List<Competence> competences=new ArrayList<>();
     public Employe() {
     }
-    public void listeDisciplinesEtNiveau() {
-        for (Competence competence : competences) {
-            System.out.println(competence.discipline.nom + " : " + competence.niveau);
-        }
+    public List<Competence> listeDisciplinesEtNiveau() {
+        return competences;
     }
     public void addDiscipline(Disciplines discipline, int niveau) {
-        Competence temp = new Competence();
-        temp.discipline = discipline;
-        temp.niveau = niveau;
+        Competence temp = new Competence(discipline, niveau);
         competences.add(temp);
     }
     public void modifDiscipline(Disciplines discipline, int niveau) {
-        competences.get(competences.indexOf(discipline)).niveau = niveau;
+        for (Competence competence : competences) {
+            if(competences.get(competences.indexOf(competence)).discipline.equals(discipline)) {
+                competences.get(competences.indexOf(competence)).niveau = niveau;
+            }
+        }
     }
     public void suppDiscipline(Disciplines discipline) {
         competences.remove(discipline);
