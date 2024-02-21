@@ -18,6 +18,8 @@ public class Gestion {
         System.out.println(projet1.getInvestissements());
         employe1.modifDiscipline(discipline1, 15);
         projet1.niveauResponsableDiscipline();
+        System.out.println(projet1.niveauResponsableDiscipline());
+        System.out.println(projet1.investissementsTotal());
     }
     public void creerDeBase(){
         Disciplines discipline1 = new Disciplines("Discipline1");
