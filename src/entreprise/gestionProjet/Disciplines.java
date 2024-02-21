@@ -1,7 +1,11 @@
 package entreprise.gestionProjet;
 
 import java.util.Objects;
-
+/**
+ * classe Disciplines de gestion de projet
+ * @author Walem Zaccary
+ * @version 1.0
+ */
 public class Disciplines {
 
     /**

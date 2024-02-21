@@ -3,6 +3,11 @@ package entreprise.gestionProjet;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * classe Employe de gestion de projet
+ * @author Walem Zaccary
+ * @version 1.0
+ */
 public class Employe {
     /**
      * id auto-incrémenté

@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * classe Projet de gestion de projet
+ * @author Walem Zaccary
+ * @version 1.0
+ */
 public class Projet {
     /**
      * id auto-incrémenté
