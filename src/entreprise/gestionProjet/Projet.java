@@ -101,8 +101,9 @@ public class Projet {
      */
     public void modifDiscipline(Disciplines discipline, int quantite) {
         for(Investissement investissement : investissements) {
-            if(investissements.get(investissements.indexOf(investissement)).discipline.equals(discipline)) {
-                investissements.get(investissements.indexOf(investissement)).quantiteJH = quantite;
+            int pos=investissements.indexOf(investissement);
+            if(investissements.get(pos).discipline.equals(discipline)) {
+                investissements.get(pos).quantiteJH = quantite;
             }
         }
     }

@@ -91,8 +91,9 @@ public class Employe {
      */
     public void modifDiscipline(Disciplines discipline, int niveau) {
         for (Competence competence : competences) {
-            if(competences.get(competences.indexOf(competence)).discipline.equals(discipline)) {
-                competences.get(competences.indexOf(competence)).niveau = niveau;
+            int pos = competences.indexOf(competence);
+            if(competences.get(pos).discipline.equals(discipline)) {
+                competences.get(pos).niveau = niveau;
             }
         }
     }
