@@ -58,13 +58,13 @@ public class Employe {
      * @param tel adresse de l'employé
      * @param mail mail de l'employé
      */
-    public Employe(String matricule, String nom, String prenom, String tel, String mail) {
+    public Employe(int id_emplpoye,String matricule, String nom, String prenom, String tel, String mail) {
         this.matricule = matricule;
         this.nom = nom;
         this.prenom = prenom;
         this.tel = tel;
         this.mail = mail;
-        this.id_emplpoye = id++;
+        this.id_emplpoye = id_emplpoye;
     }
 
     /**
@@ -216,5 +216,19 @@ public class Employe {
      */
     public void setCompetences(List<Competence> competences) {
         this.competences = competences;
+    }
+
+    @Override
+    public String toString() {
+        return "Employe{" +
+                "id_emplpoye=" + id_emplpoye +
+                ", matricule='" + matricule + '\'' +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", tel='" + tel + '\'' +
+                ", mail='" + mail + '\'' +
+                ", projets=" + projets +
+                ", competences=" + competences +
+                '}';
     }
 }
