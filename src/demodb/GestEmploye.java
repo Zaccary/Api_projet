@@ -8,7 +8,8 @@ import java.util.Scanner;
 
 /**
  *
- * @author Michel
+ *
+ * @author Walem Zaccary
  */
 public class GestEmploye {
 
