@@ -62,7 +62,7 @@ public class EmployeModelDB extends DAOEmploye{
 
     @Override
     public boolean removeEmploye(Employe Employe) {
-        String query = "delete from APIEmploye where idEmploye = ?";
+        String query = "delete from APIEmploye where id_Employe = ?";
         try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
             pstm.setInt(1,Employe.getId_emplpoye());
             int n = pstm.executeUpdate();
@@ -79,20 +79,21 @@ public class EmployeModelDB extends DAOEmploye{
 
     @Override
     public Employe updateEmploye(Employe Employe) {
-        String query = "update APIEmploye set numprod =?,phtva=?,description=?,stock=?,stockmin=? where idEmploye = ?";
+        String query = "update APIEmploye set matricule =?,nom=?,prenom=?,tel=?,mail=? where id_employe = ?";
         try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
             pstm.setString(1, Employe.getMatricule());
             pstm.setString(2, Employe.getNom());
             pstm.setString(3, Employe.getPrenom());
             pstm.setString(4, Employe.getTel());
             pstm.setString(5, Employe.getMail());
+            pstm.setInt(6, Employe.getId_emplpoye());
             int n = pstm.executeUpdate();
             notifyObservers();
             if(n!=0) return readEmploye(Employe.getId_emplpoye());
             else return null;
 
         } catch (SQLException e) {
-            System.err.println("erreur sql :" + e);
+            System.err.println("erreur sql update :" + e);
 
             return null;
         }

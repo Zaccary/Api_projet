@@ -26,6 +26,7 @@ public class EmployeViewConsole extends EmployeAbstractView {
 
     public void menu(){
         update(EmployeController.getAll());
+        affList(lp);
         do{
             int ch = choixListe(Arrays.asList("ajout", "retrait", "rechercher", "modifier", "fin"));
 
@@ -42,8 +43,6 @@ public class EmployeViewConsole extends EmployeAbstractView {
             }
         }while(true);
     }
-
-
 
     private void modifier() {
         int nl = choixElt(lp);
@@ -94,6 +93,7 @@ public class EmployeViewConsole extends EmployeAbstractView {
     @Override
     public Employe selectionner(){
         update(EmployeController.getAll());
+        System.out.println("liste des Employes");
         int nl =  choixListe(lp);
         Employe pr = lp.get(nl-1);
         return pr;

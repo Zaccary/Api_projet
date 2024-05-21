@@ -59,13 +59,13 @@ public class Projet {
      * @param cout coût du projet
      * @param chefProjet chef de projet
      */
-    public Projet(String nom, LocalDate dateDebut, LocalDate dateFin, BigDecimal cout, Employe chefProjet) {
+    public Projet(int id_projet, String nom, LocalDate dateDebut, LocalDate dateFin, BigDecimal cout, Employe chefProjet) {
+        this.id_projet = id_projet;
         this.nom = nom;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
         this.cout = cout;
         this.chefProjet = chefProjet;
-        this.id_projet=id++;
     }
     /**
      * retourne la liste des disciplines et le niveau du chef de projet

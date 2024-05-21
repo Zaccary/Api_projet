@@ -24,7 +24,6 @@ public abstract class EmployeAbstractView implements Observer {
     @Override
     public void update(List lp) {
         this.lp = lp;
-        affList(lp);
     }
 
 }
