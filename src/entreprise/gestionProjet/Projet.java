@@ -131,7 +131,7 @@ public class Projet {
             }
         }
         for(Disciplines disciplines :temp){
-            temp2.add(new Competence(disciplines,0));
+            temp2.add(new Competence(0,disciplines,0));
         }
         return temp2;
     }

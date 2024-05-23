@@ -1,5 +1,6 @@
 package mvc.view;
 
+import entreprise.gestionProjet.Competence;
 import entreprise.gestionProjet.Employe;
 
 import java.math.BigDecimal;
@@ -88,6 +89,20 @@ public class EmployeViewConsole extends EmployeAbstractView {
         Employe pr = EmployeController.addEmploye(new Employe(0,matricule,nom,prenom,tel,mail)) ;
         if(pr!=null) affMsg("création de :"+pr);
         else affMsg("erreur de création");
+    }
+
+    @Override
+    public Employe getWithDiscipline(int id_Competence) {
+        update(EmployeController.getAll());
+        for (Employe pr : lp) {
+            List<Competence> comp = pr.getCompetences();
+              for (Competence c : comp) {
+                    if (c.getId_competence() == id_Competence) {
+                        return pr;
+                    }
+              }
+        }
+        return null;
     }
 
     @Override

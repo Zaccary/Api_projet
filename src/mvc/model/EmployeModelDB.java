@@ -1,6 +1,7 @@
 package mvc.model;
 
 
+import entreprise.gestionProjet.Competence;
 import entreprise.gestionProjet.Employe;
 import myconnections.DBConnection;
 
@@ -138,7 +139,11 @@ public class EmployeModelDB extends DAOEmploye{
                 String prenom = rs.getString(4);
                 String tel = rs.getString(5);
                 String mail = rs.getString(6);
+                List<Competence> competences = getCompetencesForEmploye(idEmploye);
                 Employe pr = new Employe(idEmploye,matricule,nom,prenom,tel,mail);
+                for (Competence competence : competences) {
+                    pr.addDiscipline(competence.getId_competence(),competence.getDiscipline(),competence.getNiveau());
+                }
                 lp.add(pr);
             }
             return lp;
@@ -147,6 +152,24 @@ public class EmployeModelDB extends DAOEmploye{
 
             return null;
         }
+    }
+    private List<Competence> getCompetencesForEmploye(int idEmploye) {
+        List<Competence> competences = new ArrayList<>();
+        String query = "SELECT * FROM Apicompetence WHERE employe = ?";
+        try (PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1, idEmploye);
+            ResultSet rs = pstm.executeQuery();
+            while (rs.next()) {
+                int idCompetence = rs.getInt(1);
+                int niveau = rs.getInt(2);
+                int idDiscipline = rs.getInt(3);
+                Competence competence = new Competence(idCompetence, new DisciplinesModelDB().readDisciplines(idDiscipline), niveau);
+                competences.add(competence);
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :" + e);
+        }
+        return competences;
     }
 
     @Override

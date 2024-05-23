@@ -20,6 +20,7 @@ public abstract class EmployeAbstractView implements Observer {
     public abstract void menu();
 
     public abstract void affList(List l);
+    public abstract Employe getWithDiscipline(int id_discipline);
 
     @Override
     public void update(List lp) {

@@ -26,10 +26,10 @@ public class Competence {
      * @param d discipline
      * @param niveau niveau de la compétence
      */
-    public Competence(Disciplines d,int niveau) {
+    public Competence(int id_competence,Disciplines d,int niveau) {
         this.discipline= d;
         this.niveau = niveau;
-        this.id_competence = id++;
+        this.id_competence = id_competence;
     }
     /**
      * retourne l'id de la compétence
@@ -72,5 +72,14 @@ public class Competence {
      */
     public void setDiscipline(Disciplines discipline) {
         this.discipline = discipline;
+    }
+
+    @Override
+    public String toString() {
+        return "Competence{" +
+                "id_competence=" + id_competence +
+                ", niveau=" + niveau +
+                ", discipline=" + discipline +
+                '}';
     }
 }

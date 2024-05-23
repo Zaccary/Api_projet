@@ -33,8 +33,8 @@ public class Disciplines {
      * @param nom nom de la discipline
      * @param description description de la discipline
      */
-    public Disciplines(String nom, String description) {
-        id_discipline = idAct++;
+    public Disciplines(int id_discipline, String nom, String description) {
+        this.id_discipline = id_discipline;
         this.nom = nom;
         this.description = description;
     }

@@ -76,14 +76,20 @@ public class Employe {
     }
 
     /**
+     * L'ajout et la suppression des competence pourait être modifié pour être plus simple mais j'ai respecté le code de base car c'est écrit comme ça dans le pdf
      * ajoute une discipline avec un niveau
      * @param discipline
      * @param niveau
      */
-    public void addDiscipline(Disciplines discipline, int niveau) {
-        Competence temp = new Competence(discipline, niveau);
+    public void addDiscipline(int id_competence,Disciplines discipline, int niveau) {
+        Competence temp = new Competence(id_competence,discipline, niveau);
         competences.add(temp);
     }
+    /*
+    comme ceci
+    public void addDiscipline(Competence competence) {
+        competences.add(competence);
+     */
     /**
      * modifie le niveau d'une discipline
      * @param discipline
@@ -100,11 +106,17 @@ public class Employe {
 
     /**
      * supprime une discipline
+     * même remarque que pour addDiscipline
      * @param discipline
      */
     public void suppDiscipline(Disciplines discipline) {
-        competences.remove(discipline);
+        competences.removeIf(competence -> competence.getDiscipline().equals(discipline));
     }
+    /*
+    et comme ça
+    public void suppDiscipline(Competence competence) {
+        competences.remove(competence);
+     */
     /**
      * retourne l'id de l'employé
      * @return id de l'employé

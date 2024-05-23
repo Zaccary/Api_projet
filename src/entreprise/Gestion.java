@@ -36,8 +36,8 @@ public class Gestion {
         projet1.addDiscipline(discipline3, 30);
         projet1.addDiscipline(discipline4, 40);
         projet1.addDiscipline(discipline5, 50);
-        employe1.addDiscipline(discipline1, 16);
-        employe1.addDiscipline(discipline2, 21);
-        employe1.addDiscipline(discipline3, 32);
+        employe1.addDiscipline(1,discipline1, 16);
+        employe1.addDiscipline(2,discipline2, 21);
+        employe1.addDiscipline(3,discipline3, 32);
     }
 }
