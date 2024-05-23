@@ -29,7 +29,8 @@ public class GestProjetDemo {
     private CompetenceController pc3;
     private CompetenceAbstractView pv3;
     public void gestion(){
-        pm=new EmployeModelDB();
+        //pm=new EmployeModelDB();
+        pm=new EmployeModelHyb();
         pv =  new EmployeViewConsole();
         pc= new EmployeController(pm,pv);
         pm1=new ProjetModelDB();

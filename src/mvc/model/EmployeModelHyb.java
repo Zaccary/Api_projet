@@ -2,6 +2,7 @@ package mvc.model;
 
 
 import entreprise.gestionProjet.Competence;
+import entreprise.gestionProjet.Disciplines;
 import entreprise.gestionProjet.Employe;
 import myconnections.DBConnection;
 
@@ -12,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class EmployeModelDB extends DAOEmploye{
+public class EmployeModelHyb extends DAOEmploye{
 
     protected Connection dbConnect;
 
-    public EmployeModelDB(){
+    public EmployeModelHyb(){
         dbConnect = DBConnection.getConnection();
         if (dbConnect == null) {
             System.err.println("erreur de connexion");
@@ -139,15 +140,41 @@ public class EmployeModelDB extends DAOEmploye{
                 String prenom = rs.getString(4);
                 String tel = rs.getString(5);
                 String mail = rs.getString(6);
+                List<Competence> competences = getCompetencesForEmploye(idEmploye);
                 Employe pr = new Employe(idEmploye,matricule,nom,prenom,tel,mail);
+                for (Competence competence : competences) {
+                    pr.addDiscipline(competence.getId_competence(),competence.getDiscipline(),competence.getNiveau());
+                }
                 lp.add(pr);
             }
             return lp;
         } catch (SQLException e) {
             System.err.println("erreur sql :"+e);
+
             return null;
         }
     }
+    private List<Competence> getCompetencesForEmploye(int idEmploye) {
+        List<Competence> competences = new ArrayList<>();
+        String query = "SELECT * FROM ApicompetenceDisciplinesV2 WHERE employe = ?";
+        try (PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1, idEmploye);
+            ResultSet rs = pstm.executeQuery();
+            while (rs.next()) {
+                int idCompetence = rs.getInt(1);
+                int niveau = rs.getInt(2);
+                int idDiscipline = rs.getInt(4);
+                String nom = rs.getString(5);
+                String description = rs.getString(6);
+                Competence competence = new Competence(idCompetence, new Disciplines(idDiscipline,nom,description), niveau);
+                competences.add(competence);
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :" + e);
+        }
+        return competences;
+    }
+
     @Override
     public List getNotification() {
         return getEmployes();
