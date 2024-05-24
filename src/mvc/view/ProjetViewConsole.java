@@ -1,16 +1,12 @@
 package mvc.view;
 
+import entreprise.gestionProjet.Investissement;
 import entreprise.gestionProjet.Employe;
 import entreprise.gestionProjet.Projet;
-import mvc.controller.EmployeController;
-import mvc.model.DAOEmploye;
-import mvc.model.EmployeModelDB;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -96,6 +92,19 @@ public class ProjetViewConsole extends ProjetAbstractView {
         Projet pr = ProjetController.addProjet(new Projet(0,nom,datedebut,datefin,cout,chefprojet)) ;
         if(pr!=null) affMsg("création de :"+pr);
         else affMsg("erreur de création");
+    }
+    @Override
+    public Projet getWithDiscipline(int id_investissement) {
+        update(ProjetController.getAll());
+        for (Projet pr : lp) {
+            List<Investissement> comp = pr.getInvestissements();
+            for (Investissement c : comp) {
+                if (c.getId_investissement() == id_investissement) {
+                    return pr;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

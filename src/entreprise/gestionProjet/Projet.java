@@ -90,8 +90,8 @@ public class Projet {
      * @param discipline discipline à ajouter
      * @param quantite quantité de discipline
      */
-    public void addDiscipline(Disciplines discipline, int quantite){
-        Investissement temp = new Investissement(discipline, quantite);
+    public void addDiscipline(int id_investissement,Disciplines discipline, int quantite){
+        Investissement temp = new Investissement(id_investissement,discipline, quantite);
         investissements.add(temp);
     }
     /**
@@ -252,4 +252,5 @@ public class Projet {
                 ", investissements=" + investissements +
                 '}';
     }
+
 }

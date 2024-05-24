@@ -19,6 +19,8 @@ public abstract class ProjetAbstractView implements Observer {
     }
     public abstract void affMsg(String msg);
 
+    public abstract Projet getWithDiscipline(int id_investissement);
+
     public abstract Projet selectionner();
 
     public abstract void menu();

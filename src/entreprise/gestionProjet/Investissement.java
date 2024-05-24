@@ -28,10 +28,10 @@ public class Investissement {
      * @param d discipline
      * @param quantite quantité de JH
      */
-    public Investissement(Disciplines d,int quantite) {
+    public Investissement(int id_investissement,Disciplines d,int quantite) {
         this.discipline= d;
         this.quantiteJH = quantite;
-        this.id_investissement = id++;
+        this.id_investissement = id_investissement;
     }
 
     public Disciplines getDiscipline() {

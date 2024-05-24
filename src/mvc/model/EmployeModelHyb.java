@@ -115,7 +115,6 @@ public class EmployeModelHyb extends DAOEmploye{
                 String mail = rs.getString(6);
                 Employe pr = new Employe(idEmploye,matricule,nom,prenom,tel,mail);
                 return  pr;
-
             }
             else {
                 return null;
@@ -174,7 +173,6 @@ public class EmployeModelHyb extends DAOEmploye{
         }
         return competences;
     }
-
     @Override
     public List getNotification() {
         return getEmployes();
