@@ -50,6 +50,8 @@ public class GestProjetDemo {
         pm4=new InvestissementModelDB();
         pv4 =  new InvestissementViewConsole();
         pc4= new InvestissementController(pm4,pv4);
+        pv.setDisciplineView(pv2);
+        pv1.setDisciplineView(pv2);
         pv1.setEmployeView(pv);
         pv3.setEmployeView(pv);
         pv3.setDisciplinesView(pv2);

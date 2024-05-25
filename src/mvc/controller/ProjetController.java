@@ -1,7 +1,7 @@
 
 package mvc.controller;
 
-import entreprise.gestionProjet.Projet;
+import entreprise.gestionProjet.*;
 import entreprise.gestionProjet.Projet;
 import mvc.model.DAOProjet;
 import mvc.view.ProjetAbstractView;
@@ -34,5 +34,24 @@ public class ProjetController {
 
     public Projet search(int idProjet) {
         return model.readProjet(idProjet);
+    }
+    public List<Investissement> listeDisciplinesEtInvestissement(Projet projet) {
+        return model.listeDisciplinesEtInvestissement(projet);
+    }
+
+    public boolean addDisciplines(Projet projet, Disciplines discipline, int niveau) {
+        return model.addDisciplines(projet,discipline, niveau);
+    }
+
+    public boolean modifDiscipline(Projet projet,Disciplines discipline, int niveau) {
+        return model.modifDiscipline(projet,discipline, niveau);
+    }
+
+    public boolean suppDiscipline(Projet projet,Disciplines discipline) {
+        return model.suppDiscipline(projet,discipline);
+    }
+
+    public List<Competence> niveauxResponsableDisciplines(Projet projet) {
+        return model.niveauxResponsableDisciplines(projet);
     }
 }

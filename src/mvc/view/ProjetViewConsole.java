@@ -1,8 +1,6 @@
 package mvc.view;
 
-import entreprise.gestionProjet.Investissement;
-import entreprise.gestionProjet.Employe;
-import entreprise.gestionProjet.Projet;
+import entreprise.gestionProjet.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,6 +44,75 @@ public class ProjetViewConsole extends ProjetAbstractView {
             }
         }while(true);
     }
+    private void special(Projet pr) {
+
+        do {
+            int ch = choixListe(Arrays.asList("liste des disciplines et investissements", "ajouter discipline", "modifier discipline", "supprimer discipline", "liste des niveaux responsables des disciplines", "menu principal"));
+            switch (ch) {
+                case 1:
+                    listeDisciplineEtInvestissement(pr);
+                    break;
+
+                case 2:
+                    ajouterDiscipline(pr);
+                    break;
+
+                case 3:
+                    modifierDiscipline(pr);
+                    break;
+
+                case 4:
+                    supprimerDiscipline(pr);
+                    break;
+
+                case 5:
+                    niveauxResponsablesDisciplines(pr);
+                    break;
+
+                case 6:
+                    return;
+            }
+            ;
+        } while (true);
+    }
+    public void listeDisciplineEtInvestissement(Projet pr) {
+        List<Investissement> comp= ProjetController.listeDisciplinesEtInvestissement(pr);
+        if(comp.isEmpty()) affMsg("aucune discipline trouvée");
+        else affList(comp);
+    }
+    public void ajouterDiscipline(Projet pr) {
+        Disciplines di = pv2.selectionner();
+        System.out.println("niveau ?");
+        int niv = sc.nextInt();
+        boolean ok = ProjetController.addDisciplines(pr, di, niv);
+        if (ok) affMsg("Discipline ajoutée");
+        else affMsg("Erreur lors de l'ajout de la discipline");
+
+    }
+
+    public void supprimerDiscipline(Projet pr) {
+        Disciplines di = pv2.selectionner();
+        boolean ok = ProjetController.suppDiscipline(pr, di);
+        if (ok) affMsg("Discipline supprimée");
+        else affMsg("Erreur lors de la suppression de la discipline");
+
+    }
+
+    public void modifierDiscipline(Projet pr) {
+        Disciplines di = pv2.selectionner();
+        System.out.println("niveau ?");
+        int niv = sc.nextInt();
+        boolean ok = ProjetController.modifDiscipline(pr, di, niv);
+        if (ok) affMsg("Discipline modifiée");
+        else affMsg("Erreur lors de la modification de la discipline");
+
+    }
+
+    public void niveauxResponsablesDisciplines(Projet pr) {
+        List<Competence> lp = ProjetController.niveauxResponsableDisciplines(pr);
+        if (lp.isEmpty()) affMsg("aucune competence trouvé");
+        else affList(lp);
+    }
 
 
 
@@ -66,10 +133,12 @@ public class ProjetViewConsole extends ProjetAbstractView {
     private void rechercher() {
         System.out.println("idProjet : ");
         int idProjet = sc.nextInt();
-        ProjetController.search(idProjet);
-        System.out.println("Projet trouvé : "+ProjetController.search(idProjet));
+        Projet pr=ProjetController.search(idProjet);
+        if (pr!=null){
+            System.out.println("Projet trouvé : "+pr);
+            special(pr);
+        }
     }
-
     private void retirer() {
 
         int nl = choixElt(lp);

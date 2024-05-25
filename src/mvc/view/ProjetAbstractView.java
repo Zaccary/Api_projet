@@ -10,12 +10,16 @@ public abstract class ProjetAbstractView implements Observer {
     protected ProjetController ProjetController;
     protected List<Projet> lp;
     protected EmployeAbstractView pv;
+    protected DisciplinesAbstractView pv2;
 
     public void  setController(ProjetController ProjetController){
         this.ProjetController=ProjetController;
     }
     public void setEmployeView(EmployeAbstractView pv){
         this.pv=pv;
+    }
+    public  void setDisciplineView(DisciplinesAbstractView pv2){
+        this.pv2=pv2;
     }
     public abstract void affMsg(String msg);
 

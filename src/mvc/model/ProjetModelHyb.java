@@ -111,10 +111,11 @@ public class ProjetModelHyb extends DAOProjet{
                 LocalDate datedebut = rs.getDate(3).toLocalDate();
                 LocalDate datefin = rs.getDate(4).toLocalDate();
                 BigDecimal cout = rs.getBigDecimal(5);
-                Employe chefprojet = new EmployeModelDB().readEmploye(rs.getInt(6));
+                Employe chefprojet = new EmployeModelHyb().readEmploye(rs.getInt(6));
                 Projet pr = new Projet(idProjet,nom,datedebut,datefin,cout,chefprojet);
+                List<Investissement> investissements = getInvestissementForProjet(idProjet);
+                pr.setInvestissements(investissements);
                 return  pr;
-
             }
             else {
                 return null;
@@ -139,7 +140,7 @@ public class ProjetModelHyb extends DAOProjet{
                 LocalDate datefin = rs.getDate(4).toLocalDate();
                 BigDecimal cout = rs.getBigDecimal(5);
                 List<Investissement> investissements = getInvestissementForProjet(idProjet);
-                Employe chefprojet = new EmployeModelDB().readEmploye(rs.getInt(6));
+                Employe chefprojet = new EmployeModelHyb().readEmploye(rs.getInt(6));
                 Projet pr = new Projet(idProjet,nom,datedebut,datefin,cout,chefprojet);
                 for (Investissement investissement : investissements) {
                     pr.addDiscipline(investissement.getId_investissement(),investissement.getDiscipline(),investissement.getQuantiteJH());
@@ -153,6 +154,81 @@ public class ProjetModelHyb extends DAOProjet{
             return null;
         }
     }
+
+    @Override
+    public List<Investissement> listeDisciplinesEtInvestissement(Projet projet) {
+        return  projet.listeDisciplinesEtInvestissement();
+    }
+
+    @Override
+    public boolean addDisciplines(Projet projet, Disciplines discipline, int niveau) {
+        int idEmploye = projet.getId_projet();
+        Investissement investissement = new Investissement(0,discipline,niveau);
+        investissement = pm4.addInvestissement(investissement,idEmploye);
+        if (investissement != null) {
+            notifyObservers();
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean modifDiscipline(Projet projet, Disciplines discipline, int niveau) {
+        String query = "select id_investissement from APIInvestissement where Discipline = ? and projet = ?";
+        Investissement investissement = null;
+        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1,discipline.getId_discipline());
+            pstm.setInt(2,projet.getId_projet());
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                int id = rs.getInt(1);
+                investissement= new Investissement(id,discipline,niveau);
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :"+e);
+        }
+        investissement = pm4.updateInvestissement(investissement,projet.getId_projet());
+        if (investissement != null) {
+            notifyObservers();
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean suppDiscipline(Projet projet, Disciplines discipline) {
+        String query = "select id_investissement, niveau from APIInvestissement where Discipline = ? and projet = ?";
+        Investissement investissement = null;
+        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1,discipline.getId_discipline());
+            pstm.setInt(2,projet.getId_projet());
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                int id = rs.getInt(1);
+                int niveau = rs.getInt(2);
+                investissement= new Investissement(id,discipline,niveau);
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :"+e);
+        }
+        boolean x= pm4.removeInvestissement(investissement);
+        if (x) {
+            notifyObservers();
+        }
+        return x;
+    }
+
+    @Override
+    public List<Competence> niveauxResponsableDisciplines(Projet projet) {
+        return projet.niveauResponsableDiscipline();
+    }
+
     private List<Investissement> getInvestissementForProjet(int idProjet) {
         List<Investissement> Investissements = new ArrayList<>();
         String query = "SELECT * FROM ApiInvestissementDisciplinesV2 WHERE projet = ?";

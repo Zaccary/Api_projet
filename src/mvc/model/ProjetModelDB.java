@@ -1,7 +1,7 @@
 package mvc.model;
 
 
-import entreprise.gestionProjet.Projet;
+import entreprise.gestionProjet.*;
 import myconnections.DBConnection;
 
 
@@ -10,7 +10,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
-import entreprise.gestionProjet.Employe;
 
 
 public class ProjetModelDB extends DAOProjet{
@@ -149,6 +148,31 @@ public class ProjetModelDB extends DAOProjet{
 
             return null;
         }
+    }
+    //voir modelHyb
+    @Override
+    public List<Investissement> listeDisciplinesEtInvestissement(Projet projet) {
+        return List.of();
+    }
+
+    @Override
+    public boolean addDisciplines(Projet projet, Disciplines discipline, int niveau) {
+        return false;
+    }
+
+    @Override
+    public boolean modifDiscipline(Projet projet, Disciplines discipline, int niveau) {
+        return false;
+    }
+
+    @Override
+    public boolean suppDiscipline(Projet projet, Disciplines discipline) {
+        return false;
+    }
+
+    @Override
+    public List<Competence> niveauxResponsableDisciplines(Projet projet) {
+        return List.of();
     }
 
     @Override

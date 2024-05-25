@@ -9,6 +9,10 @@ public abstract class EmployeAbstractView implements Observer {
 
     protected EmployeController EmployeController;
     protected List<Employe> lp;
+    protected DisciplinesAbstractView pv2;
+    public  void setDisciplineView(DisciplinesAbstractView pv2){
+        this.pv2=pv2;
+    }
 
     public void  setController(EmployeController EmployeController){
         this.EmployeController=EmployeController;

@@ -230,6 +230,7 @@ public class Employe {
         this.competences = competences;
     }
 
+
     @Override
     public String toString() {
         return "Employe{" +

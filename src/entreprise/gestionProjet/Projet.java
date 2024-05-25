@@ -117,7 +117,7 @@ public class Projet {
     /**
      *retourne la liste des disciplines et le niveau du chef de projet
      * @return liste des disciplines et le niveau du chef de projet
-     */
+
     public List<Competence> niveauResponsableDiscipline() {
         List<Disciplines> temp=new ArrayList<>();
         List<Competence> temp2=new ArrayList<>();
@@ -134,6 +134,18 @@ public class Projet {
             temp2.add(new Competence(0,disciplines,0));
         }
         return temp2;
+    }
+     */
+    public List<Competence> niveauResponsableDiscipline() {
+        List<Competence> temp=new ArrayList<>();
+        for (Investissement investissement : investissements) {
+            for(Competence competence : chefProjet.getCompetences()) {
+                if(investissement.getDiscipline().equals(competence.getDiscipline())) {
+                    temp.add(competence);
+                }
+            }
+        }
+        return temp;
     }
 
     /**

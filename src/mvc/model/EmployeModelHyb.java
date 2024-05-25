@@ -1,14 +1,13 @@
 package mvc.model;
 
 
-import entreprise.gestionProjet.Competence;
-import entreprise.gestionProjet.Disciplines;
-import entreprise.gestionProjet.Employe;
+import entreprise.gestionProjet.*;
 import myconnections.DBConnection;
 
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,6 +113,8 @@ public class EmployeModelHyb extends DAOEmploye{
                 String tel = rs.getString(5);
                 String mail = rs.getString(6);
                 Employe pr = new Employe(idEmploye,matricule,nom,prenom,tel,mail);
+                List<Competence> competences = getCompetencesForEmploye(idEmploye);
+                pr.setCompetences(competences);
                 return  pr;
             }
             else {
@@ -153,6 +154,101 @@ public class EmployeModelHyb extends DAOEmploye{
             return null;
         }
     }
+
+    @Override
+    public List<Competence> listeDisciplinesEtNiveau(Employe employe) {
+        return employe.listeDisciplinesEtNiveau();
+    }
+
+    @Override
+    public boolean addDisciplines(Employe employe, Disciplines discipline, int niveau) {
+        int idEmploye = employe.getId_emplpoye();
+        Competence competence = new Competence(0,discipline,niveau);
+        competence = pm3.addCompetence(competence,idEmploye);
+        if (competence != null) {
+            notifyObservers();
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean modifDiscipline(Employe employe, Disciplines discipline, int niveau) {
+        String query = "select id_competence from APICompetence where Discipline = ? and employe = ?";
+        Competence competence = null;
+        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1,discipline.getId_discipline());
+            pstm.setInt(2,employe.getId_emplpoye());
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                int id = rs.getInt(1);
+                competence= new Competence(id,discipline,niveau);
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :"+e);
+        }
+        competence = pm3.updateCompetence(competence,employe.getId_emplpoye());
+        if (competence != null) {
+            notifyObservers();
+            return true;
+        }
+        else return false;
+    }
+
+    @Override
+    public boolean suppDiscipline(Employe employe, Disciplines discipline) {
+        String query = "select id_competence, niveau from APICompetence where Discipline = ? and employe = ?";
+        Competence competence = null;
+        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1,discipline.getId_discipline());
+            pstm.setInt(2,employe.getId_emplpoye());
+            ResultSet rs = pstm.executeQuery();
+            if(rs.next()){
+                int id = rs.getInt(1);
+                int niveau = rs.getInt(2);
+                competence= new Competence(id,discipline,niveau);
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            System.err.println("erreur sql :"+e);
+        }
+        boolean x= pm3.removeCompetence(competence);
+        if (x) {
+            notifyObservers();
+        }
+        return x;
+    }
+
+    @Override
+    public List<Projet> listeProjets(Employe employe) {
+        List<Projet> lp = new ArrayList<>();
+        String query="select id_projet, nomProj, dateDebut, dateFin, cout from APIProjetEmploye where id_employe = ?";
+        try (PreparedStatement pstm = dbConnect.prepareStatement(query)) {
+            pstm.setInt(1, employe.getId_emplpoye());
+            System.out.println(pstm);
+            ResultSet rs = pstm.executeQuery();
+            while(rs.next()){
+                int idProjet = rs.getInt(1);
+                String nom = rs.getString(2);
+                LocalDate datedebut = rs.getDate(3).toLocalDate();
+                LocalDate datefin = rs.getDate(4).toLocalDate();
+                BigDecimal cout = rs.getBigDecimal(5);
+                Projet pr = new Projet(idProjet,nom,datedebut,datefin,cout,employe);
+                lp.add(pr);
+            }
+            return lp;
+        } catch (SQLException e) {
+            System.err.println("erreur sql :"+e);
+
+            return null;
+        }
+    }
+
     private List<Competence> getCompetencesForEmploye(int idEmploye) {
         List<Competence> competences = new ArrayList<>();
         String query = "SELECT * FROM ApicompetenceDisciplinesV2 WHERE employe = ?";

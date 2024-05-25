@@ -2,7 +2,9 @@ package mvc.model;
 
 
 import entreprise.gestionProjet.Competence;
+import entreprise.gestionProjet.Disciplines;
 import entreprise.gestionProjet.Employe;
+import entreprise.gestionProjet.Projet;
 import myconnections.DBConnection;
 
 
@@ -148,6 +150,32 @@ public class EmployeModelDB extends DAOEmploye{
             return null;
         }
     }
+    //faite dans modelHyb
+    @Override
+    public List<Competence> listeDisciplinesEtNiveau(Employe employe) {
+        return List.of();
+    }
+
+    @Override
+    public boolean addDisciplines(Employe employe, Disciplines discipline, int niveau) {
+        return false;
+    }
+
+    @Override
+    public boolean modifDiscipline(Employe employe, Disciplines discipline, int niveau) {
+        return false;
+    }
+
+    @Override
+    public boolean suppDiscipline(Employe employe, Disciplines discipline) {
+        return false;
+    }
+
+    @Override
+    public List<Projet> listeProjets(Employe employe) {
+        return List.of();
+    }
+
     @Override
     public List getNotification() {
         return getEmployes();
