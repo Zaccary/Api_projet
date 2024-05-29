@@ -27,30 +27,16 @@ public class DisciplinesModelDB extends DAODisciplines{
 
     @Override
     public Disciplines addDisciplines(Disciplines Disciplines) {
-        String query1 = "insert into APIDisciplines(nom,description) values(?,?)";
-        String query2 = "select id_discipline from APIDisciplines where nom =?";
-        try (PreparedStatement pstm1 = dbConnect.prepareStatement(query1);
-             PreparedStatement pstm2 = dbConnect.prepareStatement(query2);
-        ) {
-            pstm1.setString(1, Disciplines.getNom());
-            pstm1.setString(2,Disciplines.getDescription());
-            int n = pstm1.executeUpdate();
-            System.out.println(n + " ligne insérée");
-            if (n == 1) {
-                pstm2.setString(1, Disciplines.getNom());
-                ResultSet rs = pstm2.executeQuery();
-                if (rs.next()) {
-                    int id_discipline = rs.getInt(1);
-                    System.out.println("id_discipline = " + id_discipline);
-                    notifyObservers();
-                    return Disciplines;
-                } else{
-                    System.out.println("record introuvable");
-                    return null;
-                }
-            }
-            else return null;
-
+        String query = "{call APICREATEDISCIPLINES(?, ?, ?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.setString(2, Disciplines.getNom());
+            cstmt.setString(3, Disciplines.getDescription());
+            cstmt.execute();
+            int id_discipline = cstmt.getInt(1);
+            Disciplines.setId_discipline(id_discipline);
+            notifyObservers();
+            return Disciplines;
         } catch (SQLException e) {
             System.out.println("erreur sql :" + e);
             return null;
@@ -59,36 +45,30 @@ public class DisciplinesModelDB extends DAODisciplines{
 
     @Override
     public boolean removeDisciplines(Disciplines Disciplines) {
-        String query = "delete from APIDisciplines where id_discipline = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1,Disciplines.getId_discipline());
-            int n = pstm.executeUpdate();
+        String query = "{call SUPPDISCIPLINES(?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, Disciplines.getId_discipline());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return true;
-            else return false;
-
+            return true;
         } catch (SQLException e) {
-            System.err.println("erreur sql :"+e);
-
+            System.out.println("erreur sql :" + e);
             return false;
         }
     }
 
     @Override
     public Disciplines updateDisciplines(Disciplines Disciplines) {
-        String query = "update APIDisciplines set NOM= ?, DESCRIPTION=? where ID_DISCIPLINE = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setString(1, Disciplines.getNom());
-            pstm.setString(2,Disciplines.getDescription());
-            pstm.setInt(3,Disciplines.getId_discipline());
-            int n = pstm.executeUpdate();
+        String query = "{call APIMODIFDISCIPLINES(?, ?, ?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, Disciplines.getId_discipline());
+            cstmt.setString(2, Disciplines.getNom());
+            cstmt.setString(3, Disciplines.getDescription());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return readDisciplines(Disciplines.getId_discipline());
-            else return null;
-
+            return Disciplines;
         } catch (SQLException e) {
-            System.err.println("erreur sql update :" + e);
-
+            System.out.println("erreur sql :" + e);
             return null;
         }
     }
