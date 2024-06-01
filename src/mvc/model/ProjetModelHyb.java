@@ -25,36 +25,22 @@ public class ProjetModelHyb extends DAOProjet{
         }
 
     }
-
+    //trigger si la date de fin est avant la date de début (trigger:check_dates_before_insert)
     @Override
-    public Projet addProjet(Projet Projet) {
-        String query1 = "insert into APIPROJET(nom,datedebut,datefin,cout,chefprojet) values(?,?,?,?,?)";
-        String query2 = "select id_projet from APIPROJET where nom =?";
-        try (PreparedStatement pstm1 = dbConnect.prepareStatement(query1);
-             PreparedStatement pstm2 = dbConnect.prepareStatement(query2);
-        ) {
-            pstm1.setString(1, Projet.getNom());
-            pstm1.setDate(2, Date.valueOf(Projet.getDateDebut()));
-            pstm1.setDate(3, Date.valueOf(Projet.getDateFin()));
-            pstm1.setBigDecimal(4, Projet.getCout());
-            pstm1.setInt(5, Projet.getChefProjet().getId_emplpoye());
-            int n = pstm1.executeUpdate();
-            System.out.println(n + " ligne insérée");
-            if (n == 1) {
-                pstm2.setString(1, Projet.getNom());
-                ResultSet rs = pstm2.executeQuery();
-                if (rs.next()) {
-                    int id_projet = rs.getInt(1);
-                    System.out.println("id_projet = " + id_projet);
-                    notifyObservers();
-                    return Projet;
-                } else{
-                    System.out.println("record introuvable");
-                    return null;
-                }
-            }
-            else return null;
+    public Projet addProjet(Projet projet) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APICREATEPROJET(?, ?, ?, ?, ?, ?) }")) {
+            call.registerOutParameter(1, Types.INTEGER);
+            call.setString(2, projet.getNom());
+            call.setDate(3, Date.valueOf(projet.getDateDebut()));
+            call.setDate(4, Date.valueOf(projet.getDateFin()));
+            call.setBigDecimal(5, projet.getCout());
+            call.setInt(6, projet.getChefProjet().getId_emplpoye());
+            call.execute();
 
+            int id_projet = call.getInt(1);
+            projet.setId_projet(id_projet);
+            notifyObservers();
+            return projet;
         } catch (SQLException e) {
             System.out.println("erreur sql :" + e);
             return null;
@@ -62,40 +48,33 @@ public class ProjetModelHyb extends DAOProjet{
     }
 
     @Override
-    public boolean removeProjet(Projet Projet) {
-        String query = "delete from APIProjet where id_Projet = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1,Projet.getId_projet());
-            int n = pstm.executeUpdate();
+    public boolean removeProjet(Projet projet) {
+        String query = "{call SUPPPROJET(?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, projet.getId_projet());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return true;
-            else return false;
-
+            return true;
         } catch (SQLException e) {
-            System.err.println("erreur sql :"+e);
-
+            System.out.println("erreur sql :" + e);
             return false;
         }
     }
 
     @Override
-    public Projet updateProjet(Projet Projet) {
-        String query = "update APIProjet set nom=?,datedebut=?,datefin=?,cout=?,chefprojet=? where id_projet = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setString(1, Projet.getNom());
-            pstm.setDate(2, Date.valueOf(Projet.getDateDebut()));
-            pstm.setDate(3, Date.valueOf(Projet.getDateFin()));
-            pstm.setBigDecimal(4, Projet.getCout());
-            pstm.setInt(5, Projet.getChefProjet().getId_emplpoye());
-            pstm.setInt(6, Projet.getId_projet());
-            int n = pstm.executeUpdate();
+    public Projet updateProjet(Projet projet) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APIMODIFPROJET(?, ?, ?, ?, ?, ?) }")) {
+            call.setInt(1, projet.getId_projet());
+            call.setString(2, projet.getNom());
+            call.setDate(3, Date.valueOf(projet.getDateDebut()));
+            call.setDate(4, Date.valueOf(projet.getDateFin()));
+            call.setBigDecimal(5, projet.getCout());
+            call.setInt(6, projet.getChefProjet().getId_emplpoye());
+            call.execute();
             notifyObservers();
-            if(n!=0) return readProjet(Projet.getId_projet());
-            else return null;
-
+            return projet;
         } catch (SQLException e) {
-            System.err.println("erreur sql update :" + e);
-
+            System.out.println("erreur sql :" + e);
             return null;
         }
     }

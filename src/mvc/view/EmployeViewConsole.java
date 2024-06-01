@@ -128,7 +128,7 @@ public class EmployeViewConsole extends EmployeAbstractView {
         Employe pr = lp.get(nl - 1);
         String matricule = modifyIfNotBlank("Matricule de Employe", pr.getMatricule());
         String nom = modifyIfNotBlank("nom de Employe", pr.getNom());
-        String prenom = modifyIfNotBlank("nom de Employe", pr.getPrenom());
+        String prenom = modifyIfNotBlank("prenom de Employe", pr.getPrenom());
         String tel = modifyIfNotBlank("tel de Employe", pr.getTel());
         String mail = modifyIfNotBlank("mail de Employe", pr.getMail());
         Employe prmaj = EmployeController.updateEmploye(new Employe(pr.getId_emplpoye(), matricule, nom, prenom, tel, mail));

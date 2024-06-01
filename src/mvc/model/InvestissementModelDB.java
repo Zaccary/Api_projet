@@ -26,33 +26,18 @@ public class InvestissementModelDB extends DAOInvestissement{
     }
 
     @Override
-    public Investissement addInvestissement(Investissement Investissement, int id_Projet) {
-        String query1 = "insert into APIInvestissement(quantiteJH,discipline,projet) values(?,?,?)";
-        String query2 = "select id_investissement from APIInvestissement where discipline =? and projet =?";
-        try (PreparedStatement pstm1 = dbConnect.prepareStatement(query1);
-             PreparedStatement pstm2 = dbConnect.prepareStatement(query2);
-        ) {
-            pstm1.setInt(1, Investissement.getQuantiteJH());
-            pstm1.setInt(2,Investissement.getDiscipline().getId_discipline());
-            pstm1.setInt(3,id_Projet);
-            int n = pstm1.executeUpdate();
-            System.out.println(n + " ligne insérée");
-            if (n == 1) {
-                pstm2.setInt(1, Investissement.getDiscipline().getId_discipline());
-                pstm2.setInt(2, id_Projet);
-                ResultSet rs = pstm2.executeQuery();
-                if (rs.next()) {
-                    int id_investissement = rs.getInt(1);
-                    System.out.println("id_investissement = " + id_investissement);
-                    notifyObservers();
-                    return Investissement;
-                } else{
-                    System.out.println("record introuvable");
-                    return null;
-                }
-            }
-            else return null;
+    public Investissement addInvestissement(Investissement investissement, int id_Projet) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APICREATEINVESTISSEMENT(?, ?, ?, ?) }")) {
+            call.registerOutParameter(1, Types.INTEGER);
+            call.setInt(2, investissement.getQuantiteJH());
+            call.setInt(3, investissement.getDiscipline().getId_discipline());
+            call.setInt(4, id_Projet);
+            call.execute();
 
+            int id_investissement = call.getInt(1);
+            investissement.setId_investissement(id_investissement);
+            notifyObservers();
+            return investissement;
         } catch (SQLException e) {
             System.out.println("erreur sql :" + e);
             return null;
@@ -60,38 +45,31 @@ public class InvestissementModelDB extends DAOInvestissement{
     }
 
     @Override
-    public boolean removeInvestissement(Investissement Investissement) {
-        String query = "delete from APIInvestissement where id_investissement = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1,Investissement.getId_investissement());
-            int n = pstm.executeUpdate();
+    public boolean removeInvestissement(Investissement investissement) {
+        String query = "{call SUPPINVESTISSEMENT(?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, investissement.getId_investissement());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return true;
-            else return false;
-
+            return true;
         } catch (SQLException e) {
-            System.err.println("erreur sql :"+e);
-
+            System.out.println("erreur sql :" + e);
             return false;
         }
     }
 
     @Override
-    public Investissement updateInvestissement(Investissement Investissement, int id_projet) {
-        String query = "update APIInvestissement set  quantiteJH =?, discipline = ?, projet = ? where id_investissement = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1, Investissement.getQuantiteJH());
-            pstm.setInt(2,Investissement.getDiscipline().getId_discipline());
-            pstm.setInt(3,id_projet);
-            pstm.setInt(4,Investissement.getId_investissement());
-            int n = pstm.executeUpdate();
+    public Investissement updateInvestissement(Investissement investissement, int id_projet) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APIMODIFINVESTISSEMENT(?, ?, ?, ?) }")) {
+            call.setInt(1, investissement.getId_investissement());
+            call.setInt(2, investissement.getQuantiteJH());
+            call.setInt(3, investissement.getDiscipline().getId_discipline());
+            call.setInt(4, id_projet);
+            call.execute();
             notifyObservers();
-            if(n!=0) return readInvestissement(Investissement.getId_investissement());
-            else return null;
-
+            return investissement;
         } catch (SQLException e) {
-            System.err.println("erreur sql update :" + e);
-
+            System.out.println("erreur sql :" + e);
             return null;
         }
     }

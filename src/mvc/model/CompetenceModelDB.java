@@ -27,32 +27,17 @@ public class CompetenceModelDB extends DAOCompetence{
 
     @Override
     public Competence addCompetence(Competence Competence, int id_Employe) {
-        String query1 = "insert into APICompetence(niveau,discipline,employe) values(?,?,?)";
-        String query2 = "select id_competence from APICompetence where discipline =? and employe =?";
-        try (PreparedStatement pstm1 = dbConnect.prepareStatement(query1);
-             PreparedStatement pstm2 = dbConnect.prepareStatement(query2);
-        ) {
-            pstm1.setInt(1, Competence.getNiveau());
-            pstm1.setInt(2,Competence.getDiscipline().getId_discipline());
-            pstm1.setInt(3,id_Employe);
-            int n = pstm1.executeUpdate();
-            System.out.println(n + " ligne insérée");
-            if (n == 1) {
-                pstm2.setInt(1, Competence.getDiscipline().getId_discipline());
-                pstm2.setInt(2, id_Employe);
-                ResultSet rs = pstm2.executeQuery();
-                if (rs.next()) {
-                    int id_competence = rs.getInt(1);
-                    System.out.println("id_competence = " + id_competence);
-                    notifyObservers();
-                    return Competence;
-                } else{
-                    System.out.println("record introuvable");
-                    return null;
-                }
-            }
-            else return null;
+        try (CallableStatement call = dbConnect.prepareCall("{ call APICREATECOMPETENCE(?, ?, ?, ?) }")) {
+            call.registerOutParameter(1, Types.INTEGER);
+            call.setInt(2, Competence.getNiveau());
+            call.setInt(3, Competence.getDiscipline().getId_discipline());
+            call.setInt(4, id_Employe);
+            call.execute();
 
+            int id_competence = call.getInt(1);
+            Competence.setId_competence(id_competence);
+            notifyObservers();
+            return Competence;
         } catch (SQLException e) {
             System.out.println("erreur sql :" + e);
             return null;
@@ -60,38 +45,30 @@ public class CompetenceModelDB extends DAOCompetence{
     }
 
     @Override
-    public boolean removeCompetence(Competence Competence) {
-        String query = "delete from APICompetence where id_competence = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1,Competence.getId_competence());
-            int n = pstm.executeUpdate();
+    public boolean removeCompetence(Competence competence) {
+        String query = "{call SUPPCOMPETENCE(?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, competence.getId_competence());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return true;
-            else return false;
-
+            return true;
         } catch (SQLException e) {
-            System.err.println("erreur sql :"+e);
-
+            System.out.println("erreur sql :" + e);
             return false;
         }
     }
-
     @Override
-    public Competence updateCompetence(Competence Competence, int id_Employe) {
-        String query = "update APICompetence set  niveau =?, discipline = ?, employe = ? where id_competence = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1, Competence.getNiveau());
-            pstm.setInt(2,Competence.getDiscipline().getId_discipline());
-            pstm.setInt(3,id_Employe);
-            pstm.setInt(4,Competence.getId_competence());
-            int n = pstm.executeUpdate();
+    public Competence updateCompetence(Competence competence, int id_Employe) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APIMODIFCOMPETENCE(?, ?, ?, ?) }")) {
+            call.setInt(1, competence.getId_competence());
+            call.setInt(2, competence.getNiveau());
+            call.setInt(3, competence.getDiscipline().getId_discipline());
+            call.setInt(4, id_Employe);
+            call.execute();
             notifyObservers();
-            if(n!=0) return readCompetence(Competence.getId_competence());
-            else return null;
-
+            return competence;
         } catch (SQLException e) {
-            System.err.println("erreur sql update :" + e);
-
+            System.out.println("erreur sql :" + e);
             return null;
         }
     }

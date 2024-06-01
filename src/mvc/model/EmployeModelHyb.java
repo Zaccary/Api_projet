@@ -27,34 +27,20 @@ public class EmployeModelHyb extends DAOEmploye{
     }
 
     @Override
-    public Employe addEmploye(Employe Employe) {
-        String query1 = "insert into APIEMPLOYE(matricule,nom,prenom,tel,mail) values(?,?,?,?,?)";
-        String query2 = "select id_employe from APIEMPLOYE where matricule =?";
-        try (PreparedStatement pstm1 = dbConnect.prepareStatement(query1);
-             PreparedStatement pstm2 = dbConnect.prepareStatement(query2);
-        ) {
-            pstm1.setString(1, Employe.getMatricule());
-            pstm1.setString(2, Employe.getNom());
-            pstm1.setString(3, Employe.getPrenom());
-            pstm1.setString(4, Employe.getTel());
-            pstm1.setString(5, Employe.getMail());
-            int n = pstm1.executeUpdate();
-            System.out.println(n + " ligne insérée");
-            if (n == 1) {
-                pstm2.setString(1, Employe.getMatricule());
-                ResultSet rs = pstm2.executeQuery();
-                if (rs.next()) {
-                    int id_employe = rs.getInt(1);
-                    System.out.println("id_employe = " + id_employe);
-                    notifyObservers();
-                    return Employe;
-                } else{
-                    System.out.println("record introuvable");
-                    return null;
-                }
-            }
-            else return null;
+    public Employe addEmploye(Employe employe) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APICREATEEMPLOYE(?, ?, ?, ?, ?, ?) }")) {
+            call.registerOutParameter(1, Types.INTEGER);
+            call.setString(2, employe.getMatricule());
+            call.setString(3, employe.getNom());
+            call.setString(4, employe.getPrenom());
+            call.setString(5, employe.getTel());
+            call.setString(6, employe.getMail());
+            call.execute();
 
+            int id_employe = call.getInt(1);
+            employe.setId_emplpoye(id_employe);
+            notifyObservers();
+            return employe;
         } catch (SQLException e) {
             System.out.println("erreur sql :" + e);
             return null;
@@ -62,40 +48,33 @@ public class EmployeModelHyb extends DAOEmploye{
     }
 
     @Override
-    public boolean removeEmploye(Employe Employe) {
-        String query = "delete from APIEmploye where id_Employe = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setInt(1,Employe.getId_emplpoye());
-            int n = pstm.executeUpdate();
+    public boolean removeEmploye(Employe employe) {
+        String query = "{call SUPPEMPLOYE(?)}";
+        try (CallableStatement cstmt = dbConnect.prepareCall(query)) {
+            cstmt.setInt(1, employe.getId_emplpoye());
+            cstmt.execute();
             notifyObservers();
-            if(n!=0) return true;
-            else return false;
-
+            return true;
         } catch (SQLException e) {
-            System.err.println("erreur sql :"+e);
-
+            System.out.println("erreur sql :" + e);
             return false;
         }
     }
 
     @Override
-    public Employe updateEmploye(Employe Employe) {
-        String query = "update APIEmploye set matricule =?,nom=?,prenom=?,tel=?,mail=? where id_employe = ?";
-        try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
-            pstm.setString(1, Employe.getMatricule());
-            pstm.setString(2, Employe.getNom());
-            pstm.setString(3, Employe.getPrenom());
-            pstm.setString(4, Employe.getTel());
-            pstm.setString(5, Employe.getMail());
-            pstm.setInt(6, Employe.getId_emplpoye());
-            int n = pstm.executeUpdate();
+    public Employe updateEmploye(Employe employe) {
+        try (CallableStatement call = dbConnect.prepareCall("{ call APIMODIFEMPLOYE(?, ?, ?, ?, ?, ?) }")) {
+            call.setInt(1, employe.getId_emplpoye());
+            call.setString(2, employe.getMatricule());
+            call.setString(3, employe.getNom());
+            call.setString(4, employe.getPrenom());
+            call.setString(5, employe.getTel());
+            call.setString(6, employe.getMail());
+            call.execute();
             notifyObservers();
-            if(n!=0) return readEmploye(Employe.getId_emplpoye());
-            else return null;
-
+            return employe;
         } catch (SQLException e) {
-            System.err.println("erreur sql update :" + e);
-
+            System.out.println("erreur sql :" + e);
             return null;
         }
     }
