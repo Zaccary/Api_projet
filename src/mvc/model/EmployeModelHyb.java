@@ -136,6 +136,7 @@ public class EmployeModelHyb extends DAOEmploye{
 
     @Override
     public List<Competence> listeDisciplinesEtNiveau(Employe employe) {
+        employe.setCompetences(getCompetencesForEmploye(employe.getId_emplpoye()));
         return employe.listeDisciplinesEtNiveau();
     }
 

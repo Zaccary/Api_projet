@@ -82,7 +82,7 @@ public class ProjetViewConsole extends ProjetAbstractView {
     }
     public void ajouterDiscipline(Projet pr) {
         Disciplines di = pv2.selectionner();
-        System.out.println("niveau ?");
+        System.out.println("quantiteJH ?");
         int niv = sc.nextInt();
         boolean ok = ProjetController.addDisciplines(pr, di, niv);
         if (ok) affMsg("Discipline ajoutée");
@@ -100,7 +100,7 @@ public class ProjetViewConsole extends ProjetAbstractView {
 
     public void modifierDiscipline(Projet pr) {
         Disciplines di = pv2.selectionner();
-        System.out.println("niveau ?");
+        System.out.println("quantiteJH ?");
         int niv = sc.nextInt();
         boolean ok = ProjetController.modifDiscipline(pr, di, niv);
         if (ok) affMsg("Discipline modifiée");

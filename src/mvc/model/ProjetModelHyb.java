@@ -136,6 +136,7 @@ public class ProjetModelHyb extends DAOProjet{
 
     @Override
     public List<Investissement> listeDisciplinesEtInvestissement(Projet projet) {
+        projet.setInvestissements(getInvestissementForProjet(projet.getId_projet()));
         return  projet.listeDisciplinesEtInvestissement();
     }
 
@@ -179,7 +180,7 @@ public class ProjetModelHyb extends DAOProjet{
 
     @Override
     public boolean suppDiscipline(Projet projet, Disciplines discipline) {
-        String query = "select id_investissement, niveau from APIInvestissement where Discipline = ? and projet = ?";
+        String query = "select id_investissement, quantiteJH from APIInvestissement where Discipline = ? and projet = ?";
         Investissement investissement = null;
         try(PreparedStatement pstm = dbConnect.prepareStatement(query)) {
             pstm.setInt(1,discipline.getId_discipline());
